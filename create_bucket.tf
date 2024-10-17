@@ -1,8 +1,3 @@
-# Configuração do provedor AWS
-provider "aws" {
-  region = "us-east-1" # Defina a região desejada
-}
-
 # Criação de um bucket S3
 resource "aws_s3_bucket" "meu_bucket" {
   bucket = "nome-do-seu-bucket-teste-123123" # Substitua pelo nome desejado
