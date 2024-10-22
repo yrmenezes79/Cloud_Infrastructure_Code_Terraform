@@ -1,7 +1,3 @@
-provider "aws" {
-  region = "us-east-1"
-}
-
 # Criando a VPC
 resource "aws_vpc" "main_vpc" {
   cidr_block = "10.0.0.0/16"
@@ -66,7 +62,7 @@ resource "aws_security_group" "web_sg" {
 
 # Criando a instância EC2
 resource "aws_instance" "web_server" {
-  ami           = "ami-0c55b159cbfafe1f0" # AMI do Ubuntu 18.04 LTS
+  ami           = "ami-0866a3c8686eaeeba" 
   instance_type = "t2.micro"
   subnet_id     = aws_subnet.public_subnet.id
   security_groups = [aws_security_group.web_sg.name]
