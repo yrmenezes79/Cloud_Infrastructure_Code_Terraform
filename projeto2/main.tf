@@ -1,50 +1,87 @@
-# VPC
+# Criar a VPC
 resource "aws_vpc" "main_vpc" {
   cidr_block = "10.0.0.0/16"
 }
 
-# Subnet pública
+# Criar a sub-rede pública
 resource "aws_subnet" "public_subnet" {
-  vpc_id     = aws_vpc.main_vpc.id
-  cidr_block = "10.0.1.0/24"
+  vpc_id                  = aws_vpc.main_vpc.id
+  cidr_block              = "10.0.1.0/24"
+  map_public_ip_on_launch = true
 }
 
-# Subnet privada
+# Criar a sub-rede privada
 resource "aws_subnet" "private_subnet" {
   vpc_id     = aws_vpc.main_vpc.id
-  cidr_block = "10.0.2.0/24"
+  cidr_block = "10.0.4.0/24"
 }
 
-# Internet Gateway
+# Criar uma segunda sub-rede privada para o RDS (opcional)
+resource "aws_subnet" "private_subnet_2" {
+  vpc_id     = aws_vpc.main_vpc.id
+  cidr_block = "10.0.3.0/24"  # Adicione outra sub-rede privada, se necessário
+}
+
+# Criar o Internet Gateway
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main_vpc.id
 }
 
-# Rota da Internet Gateway para a subnet pública
-resource "aws_route_table" "public_route_table" {
+# Criar a tabela de rotas para a sub-rede pública
+resource "aws_route_table" "public_rt" {
   vpc_id = aws_vpc.main_vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
+  }
 }
 
-resource "aws_route" "public_route" {
-  route_table_id         = aws_route_table.public_route_table.id
-  destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.igw.id
-}
-
-resource "aws_route_table_association" "public_subnet_association" {
+# Associar a sub-rede pública à tabela de rotas
+resource "aws_route_table_association" "public_association" {
   subnet_id      = aws_subnet.public_subnet.id
-  route_table_id = aws_route_table.public_route_table.id
+  route_table_id = aws_route_table.public_rt.id
 }
 
-# Security Group
-resource "aws_security_group" "allow_http" {
+# Criar o Security Group para a instância EC2
+resource "aws_security_group" "ec2_sg" {
   vpc_id = aws_vpc.main_vpc.id
 
+  # Permitir tráfego SSH (porta 22)
   ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = 22
+    to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Permitir tráfego para MySQL (porta 3306)
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/16"]
+  }
+
+  # Permitir todo o tráfego de saída
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# Criar o Security Group para o banco de dados RDS
+resource "aws_security_group" "rds_sg" {
+  vpc_id = aws_vpc.main_vpc.id
+
+  # Permitir tráfego MySQL apenas da sub-rede pública (instância EC2)
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.1.0/24"]
   }
 
   egress {
@@ -55,29 +92,63 @@ resource "aws_security_group" "allow_http" {
   }
 }
 
-# Instância EC2
-resource "aws_instance" "web_server" {
-  ami           = "ami-0c55b159cbfafe1f0" # Escolha uma AMI de sua preferência
-  instance_type = "t2.micro"
-  subnet_id     = aws_subnet.public_subnet.id
-  security_groups = [aws_security_group.allow_http.name]
+# Criar a instância EC2
+resource "aws_instance" "ec2_instance" {
+  ami                     = "ami-0866a3c8686eaeeba"  # AMI do Ubuntu 18.04 LTS
+  instance_type           = "t2.micro"
+  subnet_id               = aws_subnet.public_subnet.id
+  vpc_security_group_ids  = [aws_security_group.ec2_sg.id]
+
+  user_data = <<-EOF
+              #!/bin/bash
+              apt-get update -y
+              apt-get install -y apache2
+              systemctl start apache2
+              systemctl enable apache2
+              EOF
 
   tags = {
     Name = "WebServer"
   }
 }
 
-# Bucket S3
-resource "aws_s3_bucket" "app_bucket" {
-  bucket = "app-static-files-bucket-${random_id.bucket_id.hex}"
-  acl    = "private"
+# Criar o grupo de sub-redes para o RDS
+resource "aws_db_subnet_group" "rds_subnet_group" {
+  name       = "rds-subnet-group"
+  subnet_ids = [
+    aws_subnet.private_subnet.id,
+    aws_subnet.private_subnet_2.id  # Adicione outra sub-rede privada, se necessário
+  ]
+
+  tags = {
+    Name = "RDSSubnetGroup"
+  }
 }
 
-resource "random_id" "bucket_id" {
-  byte_length = 8
+# Criar a instância RDS
+resource "aws_db_instance" "rds_instance" {
+  allocated_storage      = 20
+  engine                 = "mysql"
+  engine_version         = "8.0.32"
+  instance_class         = "db.t3.micro"
+  db_name                = "mydb"
+  username               = "admin"
+  password               = "admin123"
+  db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
+  vpc_security_group_ids = [aws_security_group.rds_sg.id]
+  skip_final_snapshot    = true
+
+  tags = {
+    Name = "MyRDSInstance"
+  }
 }
 
-# Output do IP público da EC2
+# Output do IP público da instância EC2
 output "ec2_public_ip" {
-  value = aws_instance.web_server.public_ip
+  value = aws_instance.ec2_instance.public_ip
+}
+
+# Output do endpoint da instância RDS
+output "rds_endpoint" {
+  value = aws_db_instance.rds_instance.endpoint
 }
