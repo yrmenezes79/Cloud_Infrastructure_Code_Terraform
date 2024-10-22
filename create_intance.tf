@@ -1,8 +1,3 @@
-# Configuração do provedor AWS
-provider "aws" {
-  region = "us-east-1" # Defina a região desejada
-}
-
 # Recurso para criar uma instância EC2
 resource "aws_instance" "example" {
   ami           = "ami-0866a3c8686eaeeba"  # AMI do Ubuntu 20.04 (exemplo, pode variar conforme a região)
