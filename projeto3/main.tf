@@ -65,7 +65,7 @@ resource "aws_instance" "web_server" {
   ami           = "ami-0866a3c8686eaeeba" 
   instance_type = "t2.micro"
   subnet_id     = aws_subnet.public_subnet.id
-  security_groups = [aws_security_group.web_sg.name]
+  vpc_security_group_ids = [aws_security_group.web_sg.id]
 
   # Instalando o servidor web e configurando o site
   user_data = <<-EOF
@@ -80,9 +80,4 @@ resource "aws_instance" "web_server" {
   tags = {
     Name = "WebServer"
   }
-}
-
-# Output do IP público da instância EC2
-output "web_server_public_ip" {
-  value = aws_instance.web_server.public_ip
 }
