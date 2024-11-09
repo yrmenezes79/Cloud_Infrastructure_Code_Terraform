@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: "Template para criar uma VPC básica no AWS CloudFormation"
+
+Parameters:
+  VPCName:
+    Type: String
+    Default: "aulamack-vpc"
+    Description: "Nome da VPC"
+
+  CIDR:
+    Type: String
+    Default: "10.1.0.0/16" 
+    Description: "CIDR da VPC"
+
+Resources:
+  # Criar a VPC
+  MyVPC:
+    Type: "AWS::EC2::VPC"
+    Properties:
+      CidrBlock: !Ref CIDR
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: "Name"
+          Value: !Ref VPCName
+

@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: "Template para criar uma instância EC2 na região us-east-1"
+
+Parameters:
+  InstanceType:
+    Type: String
+    Default: "t2.micro"
+    Description: "Tipo da instância EC2 "
+  
+  KeyName:
+    Type: String
+    Description: "Nome da chave SSH para acesso à instância EC2"
+    
+  ImageId:
+    Type: String
+    Default: "ami-063d43db0594b521b"  
+    Description: "ID da AMI para criar a instância EC2"
+  
+  InstanceSecurityGroup:
+    Type: String
+    Description: "ID do grupo de segurança da instância EC2"
+
+Resources:
+  MyEC2Instance:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      ImageId: !Ref ImageId
+      SecurityGroupIds:
+        - !Ref InstanceSecurityGroup
+      AvailabilityZone: "us-east-1a"  # Exemplo de AZ, pode ser alterado
+      Tags:
+        - Key: "Name"
+          Value: "MyEC2Instance"
+
+Outputs:
+  InstanceId:
+    Description: "ID da instância EC2 criada"
+    Value: !Ref MyEC2Instance

@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: "Template para criar uma instância RDS MySQL no AWS CloudFormation"
+
+Parameters:
+  DBName:
+    Type: String
+    Default: "aulamackdb"
+    Description: "Nome do banco de dados MySQL"
+    
+  DBInstanceClass:
+    Type: String
+    Default: "db.t3.micro" 
+    Description: "Classe da instância do banco de dados"
+
+  DBUsername:
+    Type: String
+    Default: "admin"
+    Description: "Nome de usuário do banco de dados"
+    
+  DBPassword:
+    Type: String
+    NoEcho: true # Oculta a senha
+    Description: "Senha do banco de dados"
+
+  AllocatedStorage:
+    Type: Number
+    Default: 20 # Espaço em GB; db.t3.micro permite mínimo de 20GB
+    Description: "Armazenamento alocado em GB"
+
+Resources:
+  MyDBSubnetGroup:
+    Type: "AWS::RDS::DBSubnetGroup"
+    Properties:
+      DBSubnetGroupDescription: "Subnets para o RDS"
+      SubnetIds:
+        - "subnet-0cafba762b289d931"
+        - "subnet-01a6a73bc27d5a9d9" 
+
+  MyDBInstance:
+    Type: "AWS::RDS::DBInstance"
+    Properties:
+      DBName: !Ref DBName
+      DBInstanceClass: !Ref DBInstanceClass
+      Engine: "mysql"
+      MasterUsername: !Ref DBUsername
+      MasterUserPassword: !Ref DBPassword
+      AllocatedStorage: !Ref AllocatedStorage
+      DBSubnetGroupName: !Ref MyDBSubnetGroup
+      VPCSecurityGroups: 
+        - "sg-07355bc116fafce41" 
+      MultiAZ: false
+      PubliclyAccessible: false
+      BackupRetentionPeriod: 7
+      Tags:
+        - Key: "Name"
+          Value: "aulamack-rds-mysql"
