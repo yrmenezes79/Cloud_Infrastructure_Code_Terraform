@@ -1,5 +1,5 @@
 resource "aws_security_group" "sg_DefaultWebserver" {
-  name        = "sg_DefaultWebserver"
+  name        = var.securtity_aws
   description = "Trafico outbound e inbound 22"
 
   ingress {
