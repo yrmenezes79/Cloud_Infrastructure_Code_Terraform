@@ -4,7 +4,7 @@ resource "aws_instance" "Terraform" {
   ami                    = var.aws_ami
   instance_type          = var.aws_instance_type
   security_groups        = ["sg_DefaultWebserver"]
-  key_name               = "terra2"
+  key_name               = var.aws_key
   user_data              = file("install.sh")
 
   tags = {
