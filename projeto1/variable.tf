@@ -7,7 +7,7 @@ variable "count_instance" {
 variable "aws_ami" {
   description = "aws ami default"
   type        = string
-  default     = "ami-0c4e709339fa8521a"
+  default     = "ami-084568db4383264d4"
 }
 
 variable "aws_instance_type" {
