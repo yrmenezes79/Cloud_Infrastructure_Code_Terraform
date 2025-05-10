@@ -27,3 +27,8 @@ variable "aws_key" {
   type        = string
   default     = "mack2"
 }
+variable "securtity_aws" {
+  description = "aws SG default"
+  type        = string
+  default     = "sg_DefaultWebserver"
+}
