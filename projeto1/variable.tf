@@ -7,11 +7,23 @@ variable "count_instance" {
 variable "aws_ami" {
   description = "aws ami default"
   type        = string
-  default     = "ami-0866a3c8686eaeeba"
+  default     = "ami-0c4e709339fa8521a"
 }
 
 variable "aws_instance_type" {
   description = "aws instance default"
   type        = string
   default     = "t2.micro"
+}
+
+variable "aws_region" {
+  description = "aws region default"
+  type        = string
+  default     = "us-east-1"
+}
+
+variable "aws_key" {
+  description = "aws region default"
+  type        = string
+  default     = "mack2"
 }
