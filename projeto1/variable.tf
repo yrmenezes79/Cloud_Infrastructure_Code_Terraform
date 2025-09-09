@@ -31,6 +31,6 @@ variable "securtity_aws" {
 variable "aws_key" {
   description = "aws region default"
   type        = string
-  default     = "ansible1" #Alterar a chave
+  default     = "XXX" #Alterar a chave
 }
 
