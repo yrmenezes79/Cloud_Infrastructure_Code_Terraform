@@ -7,7 +7,7 @@ variable "count_instance" {
 variable "aws_ami" {
   description = "aws ami default"
   type        = string
-  default     = "ami-084568db4383264d4"
+  default     = "ami-0360c520857e3138f" #Alterar a imagem
 }
 
 variable "aws_instance_type" {
@@ -25,7 +25,7 @@ variable "aws_region" {
 variable "aws_key" {
   description = "aws region default"
   type        = string
-  default     = "mack2"
+  default     = "ansible1" #Alterar a chave
 }
 variable "securtity_aws" {
   description = "aws SG default"
