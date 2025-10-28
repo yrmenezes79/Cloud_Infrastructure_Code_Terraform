@@ -1,6 +1,6 @@
 # Recurso para criar uma instância EC2
 resource "aws_instance" "example" {
-  ami           = "ami-0360c520857e3138f"  # AMI do Ubuntu 20.04 (exemplo, pode variar conforme a região)
+  ami           = "ami-07860a2d7eb515d9a"  # AMI do Ubuntu 20.04 (exemplo, pode variar conforme a região)
   instance_type = "t3.micro"               # Tipo de instância (elegível para Free Tier)
 }
 
