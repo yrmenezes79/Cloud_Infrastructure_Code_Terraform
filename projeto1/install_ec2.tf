@@ -7,7 +7,7 @@ resource "aws_instance" "Terraform" {
     aws_security_group.allow_ssh_http.id
   ]
 
-  user_data = file("install.sh")
+  user_data = file("install_rhel.sh")
 
   tags = {
     Name = "EC2-Terraform"
