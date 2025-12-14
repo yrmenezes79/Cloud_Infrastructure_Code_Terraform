@@ -13,7 +13,7 @@ variable "aws_profile" {
 variable "ami_id" {
   description = "AMI utilizada para criar a instância"
   type        = string
-  default     = "ami-069e612f612be3a2b" 
+  default     = "ami-0360c520857e3138f"
 }
 
 variable "instance_type" {
@@ -22,15 +22,14 @@ variable "instance_type" {
   default     = "t2.micro"
 }
 
-variable "securtity_aws" {
-  description = "Lista de security groups a serem associados"
+variable "security_groups" {
+  description = "Lista de security groups"
   type        = list(string)
-  default     = ["allow_ssh_http"] 
+  default     = ["allow_ssh_http"]
 }
 
 variable "aws_key" {
-  description = "aws region default"
+  description = "Nome do key pair AWS"
   type        = string
-  default     = "XXX" #Alterar a chave
+  default     = "XXX" #ALTERAR PARA CHAVE CORRETA
 }
-
