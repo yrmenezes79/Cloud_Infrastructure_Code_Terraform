@@ -13,7 +13,7 @@ variable "aws_profile" {
 variable "ami_id" {
   description = "AMI utilizada para criar a instância"
   type        = string
-  default     = "ami-0360c520857e3138f" 
+  default     = "ami-069e612f612be3a2b" 
 }
 
 variable "instance_type" {
