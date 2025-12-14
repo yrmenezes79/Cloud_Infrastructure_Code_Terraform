@@ -62,7 +62,7 @@ resource "aws_security_group" "web_sg" {
 
 # Criando a instância EC2
 resource "aws_instance" "web_server" {
-  ami           = "ami-0866a3c8686eaeeba" 
+  ami           = "ami-0ecb62995f68bb549" 
   instance_type = "t2.micro"
   subnet_id     = aws_subnet.public_subnet.id
   vpc_security_group_ids = [aws_security_group.web_sg.id]
