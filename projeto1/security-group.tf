@@ -1,7 +1,11 @@
+data "aws_vpc" "default" {
+  default = true
+}
+
 resource "aws_security_group" "allow_ssh_http" {
   name        = "allow_ssh_http"
   description = "Permite acesso SSH e HTTP"
-  vpc_id      = null # usa VPC default, pode especificar se necessário
+  vpc_id      = data.aws_vpc.default.id
 
   ingress {
     description = "SSH"
