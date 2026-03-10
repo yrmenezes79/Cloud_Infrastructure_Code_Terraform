@@ -1,4 +1,3 @@
-# 1. The Bucket itself (keep it lean)
 resource "aws_s3_bucket" "meu_bucket" {
   bucket = "nome1-do-seu-bucket-teste-123123"
 
